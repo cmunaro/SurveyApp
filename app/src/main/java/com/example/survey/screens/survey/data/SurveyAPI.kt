@@ -1,12 +1,20 @@
 package com.example.survey.screens.survey.data
 
+import com.example.survey.screens.survey.data.model.AnswerData
 import com.example.survey.screens.survey.data.model.QuestionData
 import kotlinx.coroutines.delay
+import retrofit2.http.Body
 import retrofit2.http.GET
+import retrofit2.http.POST
 
 interface SurveyAPI {
     @GET("/questions")
     suspend fun fetchQuestions(): List<QuestionData>
+
+    @POST("/question/submit")
+    suspend fun submitAnswer(
+        @Body answer: AnswerData
+    )
 }
 
 class MockedSurveyAPI : SurveyAPI {
@@ -24,5 +32,8 @@ class MockedSurveyAPI : SurveyAPI {
             QuestionData(9, "What is your favourite music?"),
             QuestionData(10, "What is your favourite brand?")
         )
+    }
+
+    override suspend fun submitAnswer(answer: AnswerData) {
     }
 }

@@ -1,5 +1,6 @@
 package com.example.survey.screens.survey.data
 
+import com.example.survey.screens.survey.data.model.AnswerData
 import com.example.survey.screens.survey.data.model.QuestionData
 import com.example.survey.screens.survey.data.model.toQuestionsDomain
 import com.example.survey.screens.survey.domain.SurveyRepository
@@ -17,5 +18,14 @@ class SurveyRepositoryImpl(
             runCatching {
                 surveyAPI.fetchQuestions()
             }.map(List<QuestionData>::toQuestionsDomain)
+        }
+
+    override suspend fun submitAnswer(questionId: Int, answer: String): Result<Unit> =
+        withContext(coroutineDispatcher) {
+            runCatching {
+                surveyAPI.submitAnswer(
+                    answer = AnswerData(id = questionId, answer = answer)
+                )
+            }
         }
 }

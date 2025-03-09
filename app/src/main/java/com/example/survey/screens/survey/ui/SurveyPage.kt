@@ -45,7 +45,7 @@ fun SurveyScreen(
     state: SurveyPageState,
     onQuestionFailure: () -> Unit,
     onAnswerChange: (id: Int, newAnswer: String) -> Unit,
-    onAnswerSubmit: () -> Unit
+    onAnswerSubmit: (id: Int) -> Unit
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
         when (state.asyncQuestions) {
@@ -73,16 +73,18 @@ fun SurveyScreen(
                     HorizontalPager(
                         state = pagerState
                     ) { index ->
+                        val question = state.asyncQuestions.value[index]
+
                         SurveyQuestion(
-                            question = state.asyncQuestions.value[index],
+                            question = question,
                             canSubmit = state.submission == Submission.IDLE,
                             onAnswerChange = { newAnswer ->
                                 onAnswerChange(
-                                    state.asyncQuestions.value[index].id,
+                                    question.id,
                                     newAnswer
                                 )
                             },
-                            onAnswerSubmit = onAnswerSubmit
+                            onAnswerSubmit = { onAnswerSubmit(question.id) }
                         )
                     }
                 }
