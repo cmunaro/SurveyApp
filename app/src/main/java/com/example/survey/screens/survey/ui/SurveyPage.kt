@@ -1,4 +1,4 @@
-package com.example.survey.screens.survey
+package com.example.survey.screens.survey.ui
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -15,8 +15,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.survey.screens.survey.components.SurveyHeader
-import com.example.survey.screens.survey.components.SurveyQuestion
+import com.example.survey.screens.survey.ui.components.SurveyHeader
+import com.example.survey.screens.survey.ui.components.SurveyQuestion
 import com.example.survey.utils.Async
 import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable

@@ -1,7 +1,7 @@
 package com.example.survey.screens.survey.domain.model
 
-import com.example.survey.screens.survey.Query
-import com.example.survey.screens.survey.Question
+import com.example.survey.screens.survey.ui.Query
+import com.example.survey.screens.survey.ui.Question
 
 fun List<QuestionDomain>.toQuestions(): List<Question> = map { it.toQuestion() }
 

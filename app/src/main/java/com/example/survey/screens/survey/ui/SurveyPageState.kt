@@ -1,4 +1,4 @@
-package com.example.survey.screens.survey
+package com.example.survey.screens.survey.ui
 
 import androidx.compose.runtime.Immutable
 import com.example.survey.utils.Async

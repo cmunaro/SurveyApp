@@ -1,4 +1,4 @@
-package com.example.survey.screens.survey.components
+package com.example.survey.screens.survey.ui.components
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row

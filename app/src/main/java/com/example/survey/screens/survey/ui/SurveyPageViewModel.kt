@@ -1,4 +1,4 @@
-package com.example.survey.screens.survey
+package com.example.survey.screens.survey.ui
 
 import androidx.lifecycle.viewModelScope
 import com.example.survey.screens.survey.domain.GetQuestionsUseCase

@@ -1,4 +1,4 @@
-package com.example.survey.screens.survey.components
+package com.example.survey.screens.survey.ui.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -14,9 +14,9 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.survey.screens.survey.Answer
-import com.example.survey.screens.survey.Query
-import com.example.survey.screens.survey.Question
+import com.example.survey.screens.survey.ui.Answer
+import com.example.survey.screens.survey.ui.Query
+import com.example.survey.screens.survey.ui.Question
 
 @Composable
 fun SurveyQuestion(
