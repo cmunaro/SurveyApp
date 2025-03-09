@@ -8,11 +8,19 @@ import com.example.survey.utils.Async
 import com.example.survey.utils.StateViewModel
 import com.example.survey.utils.getOrThrow
 import com.example.survey.utils.mapValue
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.flatMapConcat
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.onStart
 import kotlin.time.Duration.Companion.seconds
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class SurveyPageViewModel(
     private val getQuestionsUseCase: GetQuestionsUseCase,
     private val submitAnswerUseCase: SubmitAnswerUseCase
@@ -25,14 +33,13 @@ class SurveyPageViewModel(
         loadQuestions()
     }
 
-    private fun loadQuestions() = viewModelScope.launch {
+    private fun loadQuestions() {
         getQuestionsUseCase()
-            .onFailure {
-                updateState { copy(asyncQuestions = Async.Failure(it)) }
-            }
-            .onSuccess { domainQuestions ->
-                updateState { copy(asyncQuestions = Async.Success(domainQuestions.toQuestions())) }
-            }
+            .map { domainQuestions -> Async.Success(domainQuestions.toQuestions()) }
+            .catch<Async<List<Question>>> { emit(Async.Failure(it)) }
+            .onStart { Async.Loading(null) }
+            .onEach { updateState { copy(asyncQuestions = it) } }
+            .launchIn(viewModelScope)
     }
 
     fun onAnswerChange(questionId: Int, newAnswer: String) {
@@ -51,33 +58,32 @@ class SurveyPageViewModel(
 
     fun onAnswerSubmit(questionId: Int) {
         submitJobs[questionId]?.cancel()
-        submitJobs[questionId] = viewModelScope.launch {
+        submitJobs[questionId] = flow {
+            val question = state.value.asyncQuestions.getOrThrow()
+                .first { it.id == questionId }
+            emit(question)
+        }.flatMapConcat { question ->
+            submitAnswerUseCase(questionId = question.id, answer = question.answer.value)
+        }.onEach {
             updateQuestionSubmissionState(
                 questionId = questionId,
-                submissionState = Async.Loading(null),
-                submissionAlert = SubmissionAlert.NONE
+                submissionState = Async.Success(true),
+                submissionAlert = SubmissionAlert.SUCCESS
             )
-
-            val successfullySubmitted = runCatching {
-                val question = state.value.asyncQuestions.getOrThrow()
-                    .first { it.id == questionId }
-                submitAnswerUseCase(questionId = question.id, answer = question.answer.value)
-                    .getOrThrow()
-            }.isSuccess
-
+        }.catch {
             updateQuestionSubmissionState(
                 questionId = questionId,
-                submissionState = Async.Success(successfullySubmitted),
-                submissionAlert = if (successfullySubmitted) SubmissionAlert.SUCCESS
-                else SubmissionAlert.FAILURE
+                submissionState = Async.Success(false),
+                submissionAlert = SubmissionAlert.FAILURE
             )
-
+            emit(Unit)
+        }.onEach {
             delay(3.seconds)
             updateQuestionSubmissionState(
                 questionId = questionId,
                 submissionAlert = SubmissionAlert.NONE
             )
-        }
+        }.launchIn(viewModelScope)
     }
 
     private fun updateQuestionSubmissionState(
@@ -91,8 +97,8 @@ class SurveyPageViewModel(
                     questions.map { question ->
                         if (question.id == questionId) {
                             question.copy(
-                                submitted = submissionState?: question.submitted,
-                                submissionAlert = submissionAlert?: question.submissionAlert
+                                submitted = submissionState ?: question.submitted,
+                                submissionAlert = submissionAlert ?: question.submissionAlert
                             )
                         } else question
                     }

@@ -1,13 +1,15 @@
 package com.example.survey.screens.survey.domain
 
 import com.example.survey.screens.survey.domain.model.QuestionDomain
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 
 class FakeGetQuestionsUseCase(
     private val shouldFail: Boolean = false
 ) : GetQuestionsUseCase {
-    override suspend fun invoke(): Result<List<QuestionDomain>> {
-        return if (shouldFail) Result.failure(exception)
-        else Result.success(questions)
+    override fun invoke(): Flow<List<QuestionDomain>> = flow {
+        if (shouldFail) throw exception
+        else emit(questions)
     }
 
     companion object {

@@ -5,27 +5,21 @@ import com.example.survey.screens.survey.data.model.QuestionData
 import com.example.survey.screens.survey.data.model.toQuestionsDomain
 import com.example.survey.screens.survey.domain.SurveyRepository
 import com.example.survey.screens.survey.domain.model.QuestionDomain
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
 
 class SurveyRepositoryImpl(
-    private val surveyAPI: SurveyAPI,
-    private val coroutineDispatcher: CoroutineDispatcher = Dispatchers.IO
+    private val surveyAPI: SurveyAPI
 ) : SurveyRepository {
-    override suspend fun fetchQuestions(): Result<List<QuestionDomain>> =
-        withContext(coroutineDispatcher) {
-            runCatching {
-                surveyAPI.fetchQuestions()
-            }.map(List<QuestionData>::toQuestionsDomain)
-        }
+    override fun fetchQuestions(): Flow<List<QuestionDomain>> = flow {
+        emit(surveyAPI.fetchQuestions())
+    }.map(List<QuestionData>::toQuestionsDomain)
 
-    override suspend fun submitAnswer(questionId: Int, answer: String): Result<Unit> =
-        withContext(coroutineDispatcher) {
-            runCatching {
-                surveyAPI.submitAnswer(
-                    answer = AnswerData(id = questionId, answer = answer)
-                )
-            }
-        }
+    override fun submitAnswer(questionId: Int, answer: String): Flow<Unit> = flow {
+        val response = surveyAPI.submitAnswer(
+            answer = AnswerData(id = questionId, answer = answer)
+        )
+        emit(response)
+    }
 }
