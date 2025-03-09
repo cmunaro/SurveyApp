@@ -77,7 +77,6 @@ fun SurveyScreen(
 
                         SurveyQuestion(
                             question = question,
-                            canSubmit = state.submission == Submission.IDLE,
                             onAnswerChange = { newAnswer ->
                                 onAnswerChange(
                                     question.id,

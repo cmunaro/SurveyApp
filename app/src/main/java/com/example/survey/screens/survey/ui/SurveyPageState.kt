@@ -7,11 +7,10 @@ import com.example.survey.utils.mapValue
 
 @Immutable
 data class SurveyPageState(
-    val asyncQuestions: Async<List<Question>> = Async.Uninitialized,
-    val submission: Submission = Submission.IDLE
+    val asyncQuestions: Async<List<Question>> = Async.Uninitialized
 ) {
     val numberOfSubmittedQuestions: Int = asyncQuestions.mapValue { questions ->
-        questions.count(Question::submitted)
+        questions.count { it.submitted.getOrElse(default = false) }
     }.getOrElse(0)
 }
 
@@ -20,7 +19,8 @@ data class Question(
     val id: Int,
     val query: Query,
     val answer: Answer = Answer.Empty,
-    val submitted: Boolean = false
+    val submitted: Async<Boolean> = Async.Success(false),
+    val submissionAlert: SubmissionAlert = SubmissionAlert.NONE
 )
 
 @JvmInline
@@ -33,6 +33,6 @@ value class Answer(val value: String) {
 @JvmInline
 value class Query(val value: String)
 
-enum class Submission {
-    IDLE, IN_PROGRESS
+enum class SubmissionAlert {
+    NONE, SUCCESS, FAILURE
 }

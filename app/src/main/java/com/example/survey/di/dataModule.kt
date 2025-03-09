@@ -13,7 +13,6 @@ import retrofit2.create
 
 val dataModule = module {
     single<SurveyRepository> { SurveyRepositoryImpl(surveyAPI = get()) }
-//    singleOf(::MockedSurveyAPI) bind SurveyAPI::class
     single<SurveyAPI> {
         val interceptor = HttpLoggingInterceptor()
         interceptor.setLevel(HttpLoggingInterceptor.Level.BODY)

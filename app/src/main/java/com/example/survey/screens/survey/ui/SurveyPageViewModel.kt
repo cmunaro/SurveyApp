@@ -8,14 +8,19 @@ import com.example.survey.utils.Async
 import com.example.survey.utils.StateViewModel
 import com.example.survey.utils.getOrThrow
 import com.example.survey.utils.mapValue
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlin.time.Duration.Companion.seconds
 
 class SurveyPageViewModel(
     private val getQuestionsUseCase: GetQuestionsUseCase,
     private val submitAnswerUseCase: SubmitAnswerUseCase
-): StateViewModel<SurveyPageState>(
+) : StateViewModel<SurveyPageState>(
     initialValue = SurveyPageState()
 ) {
+    private var submitJobs: MutableMap<Int, Job?> = mutableMapOf()
+
     init {
         loadQuestions()
     }
@@ -45,9 +50,14 @@ class SurveyPageViewModel(
     }
 
     fun onAnswerSubmit(questionId: Int) {
-        if (state.value.submission == Submission.IN_PROGRESS) return
-        updateState { copy(submission = Submission.IN_PROGRESS) }
-        viewModelScope.launch {
+        submitJobs[questionId]?.cancel()
+        submitJobs[questionId] = viewModelScope.launch {
+            updateQuestionSubmissionState(
+                questionId = questionId,
+                submissionState = Async.Loading(null),
+                submissionAlert = SubmissionAlert.NONE
+            )
+
             val successfullySubmitted = runCatching {
                 val question = state.value.asyncQuestions.getOrThrow()
                     .first { it.id == questionId }
@@ -55,18 +65,39 @@ class SurveyPageViewModel(
                     .getOrThrow()
             }.isSuccess
 
-            updateState {
-                copy(
-                    asyncQuestions = asyncQuestions.mapValue { questions ->
-                        questions.map { question ->
-                            if (question.id == questionId) {
-                                question.copy(submitted = successfullySubmitted)
-                            } else question
-                        }
-                    },
-                    submission = Submission.IDLE
-                )
-            }
+            updateQuestionSubmissionState(
+                questionId = questionId,
+                submissionState = Async.Success(successfullySubmitted),
+                submissionAlert = if (successfullySubmitted) SubmissionAlert.SUCCESS
+                else SubmissionAlert.FAILURE
+            )
+
+            delay(3.seconds)
+            updateQuestionSubmissionState(
+                questionId = questionId,
+                submissionAlert = SubmissionAlert.NONE
+            )
+        }
+    }
+
+    private fun updateQuestionSubmissionState(
+        questionId: Int,
+        submissionState: Async<Boolean>? = null,
+        submissionAlert: SubmissionAlert? = null
+    ) {
+        updateState {
+            copy(
+                asyncQuestions = asyncQuestions.mapValue { questions ->
+                    questions.map { question ->
+                        if (question.id == questionId) {
+                            question.copy(
+                                submitted = submissionState?: question.submitted,
+                                submissionAlert = submissionAlert?: question.submissionAlert
+                            )
+                        } else question
+                    }
+                }
+            )
         }
     }
 }
