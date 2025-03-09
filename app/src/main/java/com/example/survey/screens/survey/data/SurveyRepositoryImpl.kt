@@ -1,6 +1,6 @@
 package com.example.survey.screens.survey.data
 
-import com.example.survey.screens.survey.data.model.FetchQuestionsResponse
+import com.example.survey.screens.survey.data.model.QuestionData
 import com.example.survey.screens.survey.data.model.toQuestionsDomain
 import com.example.survey.screens.survey.domain.SurveyRepository
 import com.example.survey.screens.survey.domain.model.QuestionDomain
@@ -16,6 +16,6 @@ class SurveyRepositoryImpl(
         withContext(coroutineDispatcher) {
             runCatching {
                 surveyAPI.fetchQuestions()
-            }.map(FetchQuestionsResponse::toQuestionsDomain)
+            }.map(List<QuestionData>::toQuestionsDomain)
         }
 }
