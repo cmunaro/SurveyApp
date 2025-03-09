@@ -1,0 +1,28 @@
+package com.example.survey.screens
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Scaffold
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import com.example.survey.ui.theme.SurveyTheme
+import kotlinx.serialization.Serializable
+import org.koin.compose.KoinApplication
+
+@Serializable
+data object MainPageRoute
+
+@Composable
+fun App() {
+    KoinApplication(
+        application = {
+        }
+    ) {
+        SurveyTheme {
+            Scaffold { paddingValues ->
+
+                Navigation(
+                    modifier = Modifier.padding(paddingValues)
+                )
+            }
+        }
+    }
+}
