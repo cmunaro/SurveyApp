@@ -19,7 +19,7 @@ class SurveyPageViewModel(
 ) : StateViewModel<SurveyPageState>(
     initialValue = SurveyPageState()
 ) {
-    private var submitJobs: MutableMap<Int, Job?> = mutableMapOf()
+    private var submitJobs: MutableMap<Int, Job> = mutableMapOf()
 
     init {
         loadQuestions()
