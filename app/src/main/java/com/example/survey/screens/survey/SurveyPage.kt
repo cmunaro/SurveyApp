@@ -10,6 +10,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
@@ -17,6 +18,7 @@ import androidx.compose.ui.unit.dp
 import com.example.survey.screens.survey.components.SurveyHeader
 import com.example.survey.screens.survey.components.SurveyQuestion
 import com.example.survey.utils.Async
+import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -24,19 +26,26 @@ import org.koin.compose.viewmodel.koinViewModel
 data object SurveyPageRoute
 
 @Composable
-fun SurveyPage(viewmodel: SurveyPageViewModel = koinViewModel()) {
+fun SurveyPage(
+    viewmodel: SurveyPageViewModel = koinViewModel(),
+    onExit: () -> Unit
+) {
     val state by viewmodel.state.collectAsState()
 
     SurveyScreen(
         state = state,
-        onQuestionFailure = {}
+        onQuestionFailure = onExit,
+        onAnswerChange = viewmodel::onAnswerChange,
+        onAnswerSubmit = viewmodel::onAnswerSubmit
     )
 }
 
 @Composable
 fun SurveyScreen(
     state: SurveyPageState,
-    onQuestionFailure: () -> Unit
+    onQuestionFailure: () -> Unit,
+    onAnswerChange: (id: String, newAnswer: String) -> Unit,
+    onAnswerSubmit: () -> Unit
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
         when (state.asyncQuestions) {
@@ -51,13 +60,14 @@ fun SurveyScreen(
                     verticalArrangement = Arrangement.spacedBy(64.dp)
                 ) {
                     val pagerState = rememberPagerState { state.asyncQuestions.value.size }
+                    val scope = rememberCoroutineScope()
 
                     SurveyHeader(
                         currentQuestion = pagerState.currentPage + 1,
                         numberOfQuestions = pagerState.pageCount,
                         numberOfSubmittedQuestions = state.numberOfSubmittedQuestions,
-                        onPrevious = {},
-                        onNext = {}
+                        onPrevious = { scope.launch { pagerState.animateScrollToPage(pagerState.currentPage - 1) } },
+                        onNext = { scope.launch { pagerState.animateScrollToPage(pagerState.currentPage + 1) } }
                     )
 
                     HorizontalPager(
@@ -66,8 +76,13 @@ fun SurveyScreen(
                         SurveyQuestion(
                             question = state.asyncQuestions.value[index],
                             canSubmit = state.submission == Submission.IDLE,
-                            onAnswerChange = {},
-                            onAnswerSubmit = {}
+                            onAnswerChange = { newAnswer ->
+                                onAnswerChange(
+                                    state.asyncQuestions.value[index].id,
+                                    newAnswer
+                                )
+                            },
+                            onAnswerSubmit = onAnswerSubmit
                         )
                     }
                 }
@@ -83,7 +98,9 @@ private fun SurveyScreenPreviewLoading() {
         state = SurveyPageState(
             asyncQuestions = Async.Loading(null)
         ),
-        onQuestionFailure = {}
+        onQuestionFailure = {},
+        onAnswerChange = { _, _ ->},
+        onAnswerSubmit = {}
     )
 }
 
@@ -105,6 +122,8 @@ private fun SurveyScreenPreviewSuccess() {
                 )
             )
         ),
-        onQuestionFailure = {}
+        onQuestionFailure = {},
+        onAnswerChange = { _, _ ->},
+        onAnswerSubmit = {}
     )
 }

@@ -25,7 +25,9 @@ fun Navigation(modifier: Modifier) {
         }
 
         composable<SurveyPageRoute> {
-            SurveyPage()
+            SurveyPage(
+                onExit = { navController.popBackStack() }
+            )
         }
     }
 }
