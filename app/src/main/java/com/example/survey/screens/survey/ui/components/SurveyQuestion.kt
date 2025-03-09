@@ -104,7 +104,8 @@ fun SurveyQuestion(
         Button(
             onClick = onAnswerSubmit,
             enabled = question.submissionAlert == SubmissionAlert.NONE &&
-                    question.submitted.getOrNull() == false,
+                    question.submitted.getOrNull() == false &&
+                    question.answer.value.isNotBlank(),
             modifier = Modifier
                 .fillMaxWidth()
                 .wrapContentWidth()

@@ -28,7 +28,7 @@ class SurveyPageKtTest {
                     asyncQuestions = Async.Loading(null)
                 ),
                 onQuestionFailure = { },
-                onAnswerChange = { _, _ ->},
+                onAnswerChange = { _, _ -> },
                 onAnswerSubmit = { }
             )
         }
@@ -45,7 +45,7 @@ class SurveyPageKtTest {
                     asyncQuestions = Async.Failure(Throwable())
                 ),
                 onQuestionFailure = mockedLambda,
-                onAnswerChange = { _, _ ->},
+                onAnswerChange = { _, _ -> },
                 onAnswerSubmit = { }
             )
         }
@@ -55,14 +55,18 @@ class SurveyPageKtTest {
 
     @Test
     fun displayQuestionsAndSubmitAnswer() {
-        val onAnswerChange: (id: Int, newAnswer: String) -> Unit = spyk({_, _ ->})
+        val onAnswerChange: (id: Int, newAnswer: String) -> Unit = spyk({ _, _ -> })
         val onAnswerSubmit: (id: Int) -> Unit = spyk({})
         composeTestRule.setContent {
             SurveyScreen(
                 state = SurveyPageState(
                     asyncQuestions = Async.Success(
                         List(2) {
-                            Question(id = it, query = Query("Question $it"))
+                            Question(
+                                id = it,
+                                query = Query("Question $it"),
+                                answer = Answer("Answer $it")
+                            )
                         }
                     )
                 ),
@@ -73,15 +77,15 @@ class SurveyPageKtTest {
         }
 
         composeTestRule.onNodeWithText("Question 0").isDisplayed()
-        composeTestRule.onNodeWithText("Type here for an answer").performTextInput("a")
+        composeTestRule.onNodeWithText("Answer 0").performTextInput("a")
         composeTestRule.onNodeWithText("Submit").performClick()
-        verify(exactly = 1) { onAnswerChange.invoke(eq(0), eq("a")) }
+        verify(exactly = 1) { onAnswerChange.invoke(eq(0), eq("aAnswer 0")) }
         verify(exactly = 1) { onAnswerSubmit.invoke(eq(0)) }
     }
 
     @Test
     fun displayFirstAndSecondQuestions() {
-        val onAnswerChange: (id: Int, newAnswer: String) -> Unit = spyk({_, _ ->})
+        val onAnswerChange: (id: Int, newAnswer: String) -> Unit = spyk({ _, _ -> })
         val onAnswerSubmit: (id: Int) -> Unit = spyk({})
         composeTestRule.setContent {
             SurveyScreen(

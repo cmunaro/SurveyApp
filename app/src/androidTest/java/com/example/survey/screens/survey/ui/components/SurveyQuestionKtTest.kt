@@ -11,6 +11,8 @@ import com.example.survey.screens.survey.ui.Answer
 import com.example.survey.screens.survey.ui.Query
 import com.example.survey.screens.survey.ui.Question
 import com.example.survey.screens.survey.ui.SubmissionAlert
+import com.example.survey.screens.survey.ui.SurveyPageState
+import com.example.survey.screens.survey.ui.SurveyScreen
 import com.example.survey.utils.Async
 import io.mockk.spyk
 import io.mockk.verify
@@ -68,6 +70,30 @@ class SurveyQuestionKtTest {
         composeTestRule.onNodeWithText("John Doe").assertIsNotEnabled()
         composeTestRule.onNodeWithText("Already submitted").isDisplayed()
         composeTestRule.onNodeWithText("Already submitted").assertIsNotEnabled()
+    }
+
+    @Test
+    fun displayQuestionWithEmptyAnswer() {
+        val onAnswerChange: (id: Int, newAnswer: String) -> Unit = spyk({ _, _ -> })
+        val onAnswerSubmit: (id: Int) -> Unit = spyk({})
+        composeTestRule.setContent {
+            SurveyScreen(
+                state = SurveyPageState(
+                    asyncQuestions = Async.Success(
+                        List(2) {
+                            Question(id = it, query = Query("Question $it"))
+                        }
+                    )
+                ),
+                onQuestionFailure = { },
+                onAnswerChange = onAnswerChange,
+                onAnswerSubmit = onAnswerSubmit
+            )
+        }
+
+        composeTestRule.onNodeWithText("Question 0").isDisplayed()
+        composeTestRule.onNodeWithText("Type here for an answer").performTextInput("a")
+        composeTestRule.onNodeWithText("Submit").assertIsNotEnabled()
     }
 
     @Test
