@@ -1,29 +1,30 @@
 package com.example.survey.screens.survey
 
+import androidx.lifecycle.viewModelScope
+import com.example.survey.screens.survey.domain.GetQuestionsUseCase
+import com.example.survey.screens.survey.domain.model.toQuestions
 import com.example.survey.utils.Async
 import com.example.survey.utils.StateViewModel
 import com.example.survey.utils.mapValue
+import kotlinx.coroutines.launch
 
-class SurveyPageViewModel: StateViewModel<SurveyPageState>(
+class SurveyPageViewModel(
+    private val getQuestionsUseCase: GetQuestionsUseCase
+): StateViewModel<SurveyPageState>(
     initialValue = SurveyPageState()
 ) {
     init {
-        updateState {
-            SurveyPageState(
-                asyncQuestions = Async.Success(
-                    listOf(
-                        Question(
-                            id = "1",
-                            query = Query("What is your name?")
-                        ),
-                        Question(
-                            id = "2",
-                            query = Query("What is your feet size?")
-                        )
-                    )
-                )
-            )
-        }
+        loadQuestions()
+    }
+
+    private fun loadQuestions() = viewModelScope.launch {
+        getQuestionsUseCase()
+            .onFailure {
+                updateState { copy(asyncQuestions = Async.Failure(it)) }
+            }
+            .onSuccess { domainQuestions ->
+                updateState { copy(asyncQuestions = Async.Success(domainQuestions.toQuestions())) }
+            }
     }
 
     fun onAnswerChange(questionId: String, newAnswer: String) {
@@ -41,6 +42,5 @@ class SurveyPageViewModel: StateViewModel<SurveyPageState>(
     }
 
     fun onAnswerSubmit() {
-
     }
 }
