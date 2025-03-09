@@ -13,8 +13,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.survey.R
 
 @Composable
 fun SurveyHeader(
@@ -26,12 +28,13 @@ fun SurveyHeader(
 ) {
     Column {
         Row(
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
                 .padding(horizontal = 16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = "Question $currentQuestion/$numberOfQuestions",
+                text = stringResource(R.string.question, currentQuestion, numberOfQuestions),
                 style = MaterialTheme.typography.headlineSmall
             )
 
@@ -44,20 +47,20 @@ fun SurveyHeader(
                     onClick = onPrevious,
                     enabled = currentQuestion > 1
                 ) {
-                    Text(text = "Previous")
+                    Text(text = stringResource(R.string.previous))
                 }
 
                 Button(
                     onClick = onNext,
                     enabled = currentQuestion < numberOfQuestions
                 ) {
-                    Text(text = "Next")
+                    Text(text = stringResource(R.string.next))
                 }
             }
         }
 
         Text(
-            text = "Questions submitted: $numberOfSubmittedQuestions",
+            text = stringResource(R.string.questions_submitted, numberOfSubmittedQuestions),
             style = MaterialTheme.typography.bodyLarge,
             modifier = Modifier.align(Alignment.CenterHorizontally)
         )

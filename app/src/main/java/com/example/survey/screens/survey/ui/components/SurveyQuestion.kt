@@ -21,8 +21,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.survey.R
 import com.example.survey.screens.survey.ui.Answer
 import com.example.survey.screens.survey.ui.Query
 import com.example.survey.screens.survey.ui.Question
@@ -66,8 +68,8 @@ fun SurveyQuestion(
             Text(
                 modifier = Modifier.weight(1f),
                 text = when (question.submissionAlert) {
-                    SubmissionAlert.SUCCESS -> "Success"
-                    SubmissionAlert.FAILURE -> "Failure"
+                    SubmissionAlert.SUCCESS -> stringResource(R.string.success)
+                    SubmissionAlert.FAILURE -> stringResource(R.string.failure)
                     else -> ""
                 },
                 style = MaterialTheme.typography.headlineMedium.copy()
@@ -97,7 +99,7 @@ fun SurveyQuestion(
             enabled = question.submitted.getOrNull() == false,
             onValueChange = onAnswerChange,
             placeholder = {
-                Text(text = "Type here for an answer")
+                Text(text = stringResource(R.string.type_here_for_an_answer))
             }
         )
 
@@ -114,7 +116,7 @@ fun SurveyQuestion(
                 LocalTextStyle provides MaterialTheme.typography.titleMedium
             ) {
                 if (question.submitted.getOrElse(false)) {
-                    Text(text = "Already submitted")
+                    Text(text = stringResource(R.string.already_submitted))
                 } else {
                     Text(text = "Submit")
                 }

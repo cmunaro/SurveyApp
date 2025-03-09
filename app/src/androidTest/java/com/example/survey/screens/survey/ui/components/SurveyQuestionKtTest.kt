@@ -113,7 +113,7 @@ class SurveyQuestionKtTest {
             )
         }
 
-        composeTestRule.onNodeWithText("Failure").isDisplayed()
+        composeTestRule.onNodeWithText("Failure…").isDisplayed()
         composeTestRule.onNodeWithText("Retry").isDisplayed()
         composeTestRule.onNodeWithText("Retry").performClick()
         verify(exactly = 1) { onAnswerSubmit.invoke() }
@@ -135,7 +135,7 @@ class SurveyQuestionKtTest {
             )
         }
 
-        composeTestRule.onNodeWithText("Success").isDisplayed()
+        composeTestRule.onNodeWithText("Success!").isDisplayed()
         composeTestRule.onNodeWithText("Retry").assertDoesNotExist()
         composeTestRule.onNodeWithText("John Doe").assertIsNotEnabled()
         composeTestRule.onNodeWithText("Already submitted").assertIsNotEnabled()

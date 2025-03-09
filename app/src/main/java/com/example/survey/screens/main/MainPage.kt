@@ -8,7 +8,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import com.example.survey.R
 import com.example.survey.ui.theme.SurveyTheme
 
 @Composable
@@ -16,7 +18,7 @@ fun MainPage(onGoToSurvey: () -> Unit) {
     Box(modifier = Modifier.fillMaxSize()) {
         Text(
             modifier = Modifier.align(Alignment.TopCenter),
-            text = "Welcome",
+            text = stringResource(R.string.welcome),
             style = MaterialTheme.typography.headlineMedium
         )
 
@@ -25,7 +27,7 @@ fun MainPage(onGoToSurvey: () -> Unit) {
             onClick = onGoToSurvey
         ) {
             Text(
-                text = "Start Survey",
+                text = stringResource(R.string.start_survey),
                 style = MaterialTheme.typography.titleMedium
             )
         }
