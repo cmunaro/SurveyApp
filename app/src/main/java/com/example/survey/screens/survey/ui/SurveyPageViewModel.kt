@@ -27,7 +27,7 @@ class SurveyPageViewModel(
             }
     }
 
-    fun onAnswerChange(questionId: String, newAnswer: String) {
+    fun onAnswerChange(questionId: Int, newAnswer: String) {
         updateState {
             copy(
                 asyncQuestions = asyncQuestions.mapValue { questions ->

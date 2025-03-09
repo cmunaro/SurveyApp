@@ -17,7 +17,7 @@ data class SurveyPageState(
 
 @Immutable
 data class Question(
-    val id: String,
+    val id: Int,
     val query: Query,
     val answer: Answer = Answer.Empty,
     val submitted: Boolean = false

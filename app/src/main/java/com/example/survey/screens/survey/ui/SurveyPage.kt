@@ -44,7 +44,7 @@ fun SurveyPage(
 fun SurveyScreen(
     state: SurveyPageState,
     onQuestionFailure: () -> Unit,
-    onAnswerChange: (id: String, newAnswer: String) -> Unit,
+    onAnswerChange: (id: Int, newAnswer: String) -> Unit,
     onAnswerSubmit: () -> Unit
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
@@ -112,11 +112,11 @@ private fun SurveyScreenPreviewSuccess() {
             asyncQuestions = Async.Success(
                 listOf(
                     Question(
-                        id = "1",
+                        id = 1,
                         query = Query("What is your name?")
                     ),
                     Question(
-                        id = "2",
+                        id = 2,
                         query = Query("What is your feet size?")
                     ),
                 )

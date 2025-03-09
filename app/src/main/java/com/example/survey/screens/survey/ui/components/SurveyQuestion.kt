@@ -69,7 +69,7 @@ fun SurveyQuestion(
 private fun SurveyQuestionPreviewSubmitted() {
     SurveyQuestion(
         question = Question(
-            id = "1",
+            id = 1,
             query = Query("What is your name?"),
             answer = Answer("John Doe"),
             submitted = true
@@ -85,7 +85,7 @@ private fun SurveyQuestionPreviewSubmitted() {
 private fun SurveyQuestionPreviewUnsubmitted() {
     SurveyQuestion(
         question = Question(
-            id = "1",
+            id = 1,
             query = Query("What is your name?")
         ),
         canSubmit = true,
@@ -99,7 +99,7 @@ private fun SurveyQuestionPreviewUnsubmitted() {
 private fun SurveyQuestionPreviewUnsubmittedCantSubmit() {
     SurveyQuestion(
         question = Question(
-            id = "1",
+            id = 1,
             query = Query("What is your name?")
         ),
         canSubmit = false,
