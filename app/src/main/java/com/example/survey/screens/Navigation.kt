@@ -6,6 +6,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.survey.screens.main.MainPage
+import com.example.survey.screens.survey.SurveyPage
+import com.example.survey.screens.survey.SurveyPageRoute
 
 @Composable
 fun Navigation(modifier: Modifier) {
@@ -17,7 +19,13 @@ fun Navigation(modifier: Modifier) {
         startDestination = MainPageRoute
     ) {
         composable<MainPageRoute> {
-            MainPage()
+            MainPage(
+                onGoToSurvey = { navController.navigate(SurveyPageRoute) }
+            )
+        }
+
+        composable<SurveyPageRoute> {
+            SurveyPage()
         }
     }
 }
